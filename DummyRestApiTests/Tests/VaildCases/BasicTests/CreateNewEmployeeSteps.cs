@@ -1,7 +1,7 @@
 ﻿using TechTalk.SpecFlow;
 using RestApiSender;
 using NUnit.Framework;
-using RestSharp;
+using DummyRestApiTests.Helpers;
 
 namespace DummyRestApiTests.Tests.VaildCases.BasicTests
 {
@@ -9,6 +9,7 @@ namespace DummyRestApiTests.Tests.VaildCases.BasicTests
     class CreateNewEmployeeSteps
     {
         private readonly Sender sender = new Sender();
+        private readonly EmployeeParser parser = new EmployeeParser();
         private Employee employee;
         private SimplifiedResponseObject response;
 
@@ -40,8 +41,7 @@ namespace DummyRestApiTests.Tests.VaildCases.BasicTests
         [Then(@"new employee id should be returned")]
         public void ThenNewEmployeeIdShouldBeReturned()
         {
-            var jsonResponseData = (JsonObject)SimpleJson.DeserializeObject(response.Data);
-            var actualId = jsonResponseData[3];
+            var actualId = parser.ParseAndReturnEmployeeFromCreateResponseObject(response).Id;
 
             Assert.IsNotNull(actualId);
         }

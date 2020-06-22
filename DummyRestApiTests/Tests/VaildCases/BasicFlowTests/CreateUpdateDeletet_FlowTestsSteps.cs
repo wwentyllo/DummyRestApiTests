@@ -1,7 +1,6 @@
-﻿using NUnit.Framework;
+﻿using DummyRestApiTests.Helpers;
+using NUnit.Framework;
 using RestApiSender;
-using RestSharp;
-using System;
 using TechTalk.SpecFlow;
 
 namespace DummyRestApiTests.Tests.VaildCases.BasicFlowTests
@@ -10,6 +9,7 @@ namespace DummyRestApiTests.Tests.VaildCases.BasicFlowTests
     public class CreateUpdateDeletet_FlowTestsSteps
     {
         private readonly Sender sender = new Sender();
+        private readonly EmployeeParser parser = new EmployeeParser();
         private Employee newEmployee;
         private Employee employeeToUpdate;
         private SimplifiedResponseObject response;
@@ -37,12 +37,11 @@ namespace DummyRestApiTests.Tests.VaildCases.BasicFlowTests
         [When(@"Later I update an employee")]
         public void WhenLaterIUpdateAnEmployee()
         {
-            var jsonResponseData = (JsonObject)SimpleJson.DeserializeObject(response.Data);
             var createEmployeeStatus = response.Status;
 
             Assert.AreEqual("success", createEmployeeStatus);
 
-            createdEmployeeId = Int32.Parse(jsonResponseData[3].ToString());
+            createdEmployeeId = parser.ParseAndReturnEmployeeFromCreateResponseObject(response).Id;
             employeeToUpdate = new Employee
             {
                 Id = createdEmployeeId,
@@ -57,13 +56,12 @@ namespace DummyRestApiTests.Tests.VaildCases.BasicFlowTests
         [When(@"Next I delete an employee")]
         public void WhenNextIDeleteAnEmployee()
         {
-            var jsonResponseData = (JsonObject)SimpleJson.DeserializeObject(updateResponse.Data);
             var updateEmployeeStatus = updateResponse.Status;
 
             Assert.AreEqual("success", updateEmployeeStatus);
 
-            var updatedEmployeeId = Int32.Parse(jsonResponseData[0].ToString());
-            var updatedEmployeeSalary = jsonResponseData[2].ToString();
+            var updatedEmployeeId = parser.ParseAndReturnEmployeeFromGetAndUpdateResponseObject(updateResponse).Id;
+            var updatedEmployeeSalary = parser.ParseAndReturnEmployeeFromGetAndUpdateResponseObject(updateResponse).Salary;
 
             Assert.AreEqual(createdEmployeeId, updatedEmployeeId);
             Assert.AreNotEqual(newEmployee.Salary, updatedEmployeeSalary);

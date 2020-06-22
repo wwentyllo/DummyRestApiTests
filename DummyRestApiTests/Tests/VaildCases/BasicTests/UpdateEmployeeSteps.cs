@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
+﻿using DummyRestApiTests.Helpers;
+using NUnit.Framework;
 using RestApiSender;
-using RestSharp;
 using System;
 using TechTalk.SpecFlow;
 
@@ -10,6 +10,7 @@ namespace DummyRestApiTests.Tests.VaildCases.BasicTests
     public class UpdateEmployeeSteps
     {
         private readonly Sender sender = new Sender();
+        private readonly EmployeeParser parser = new EmployeeParser();
         private Employee updatedEmployee;
         private SimplifiedResponseObject response;
         private int empId;
@@ -49,15 +50,13 @@ namespace DummyRestApiTests.Tests.VaildCases.BasicTests
         [Then(@"the employee with updated data should be returned")]
         public void ThenTheEmployeeWithUpdatedDataShouldBeReturned()
         {
-            var jsonResponseData = (JsonObject)SimpleJson.DeserializeObject(response.Data);
-
-            var returnedEmployee = new Employee { Id = int.Parse(jsonResponseData[0].ToString()), Name = jsonResponseData[1].ToString(), Salary = jsonResponseData[2].ToString(), Age = int.Parse(jsonResponseData[3].ToString()) };
+            var returnedEmployee = parser.ParseAndReturnEmployeeFromGetAndUpdateResponseObject(response);
 
             Assert.AreEqual(updatedEmployee.Id, returnedEmployee.Id);
             Assert.AreEqual(updatedEmployee.Name, returnedEmployee.Name);
             Assert.AreEqual(updatedEmployee.Salary, returnedEmployee.Salary);
             Assert.AreEqual(updatedEmployee.Age, returnedEmployee.Age);
-            Assert.AreEqual(updatedEmployee.Image, returnedEmployee.Image);
+            Assert.AreEqual(String.Empty, returnedEmployee.Image);
 
         }
     }

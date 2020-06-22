@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
+﻿using DummyRestApiTests.Helpers;
+using NUnit.Framework;
 using RestApiSender;
-using RestSharp;
 using TechTalk.SpecFlow;
 
 namespace DummyRestApiTests.Tests.VaildCases.AdditionalCases
@@ -9,6 +9,7 @@ namespace DummyRestApiTests.Tests.VaildCases.AdditionalCases
     public class LackOfSomeFieldsCreateAdditonalTestsSteps
     {
         private readonly Sender sender = new Sender();
+        private readonly EmployeeParser parser = new EmployeeParser();
         private Employee employee;
         private SimplifiedResponseObject response;
 
@@ -38,8 +39,7 @@ namespace DummyRestApiTests.Tests.VaildCases.AdditionalCases
         [Then(@"I should retrive id of newly created employee")]
         public void ThenIShouldRetriveIdOfNewlyCreatedEmployee()
         {
-            var jsonResponseData = (JsonObject)SimpleJson.DeserializeObject(response.Data);
-            var actualId = jsonResponseData[3];
+            var actualId = parser.ParseAndReturnEmployeeFromCreateResponseObject(response).Id;
 
             Assert.IsNotNull(actualId);
         }

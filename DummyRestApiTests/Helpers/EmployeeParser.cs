@@ -33,5 +33,42 @@ namespace DummyRestApiTests.Helpers
 
             return returned;
         }
+
+        public Employee ParseAndReturnEmployeeFromCreateResponseObject(SimplifiedResponseObject responseObject)
+        {
+            var jsonResponseData = (JsonObject)SimpleJson.DeserializeObject(responseObject.Data);
+
+            if (responseObject.Data != null)
+            {
+                return new Employee
+                {
+                    Name = jsonResponseData[0].ToString(),
+                    Salary = jsonResponseData[1].ToString(),
+                    Age = Int32.Parse(jsonResponseData[2].ToString()),
+                    Id = Int32.Parse(jsonResponseData[3].ToString())
+                };
+            }
+
+            return null;
+        }
+
+        public Employee ParseAndReturnEmployeeFromGetAndUpdateResponseObject(SimplifiedResponseObject responseObject)
+        {
+            var jsonResponseData = (JsonObject)SimpleJson.DeserializeObject(responseObject.Data);
+
+            if (responseObject.Data != null)
+            {
+                return new Employee
+                {
+                    Id = Int32.Parse(jsonResponseData[0].ToString()),
+                    Name = jsonResponseData[1].ToString(),
+                    Salary = jsonResponseData[2].ToString(),
+                    Age = jsonResponseData[3] != null && jsonResponseData[3] != string.Empty ? Int32.Parse(jsonResponseData[3].ToString()) : 0,
+                    Image = jsonResponseData.Count > 4 ?  jsonResponseData[4].ToString() : null
+                };
+            }
+
+            return null;
+        }       
     }
 }

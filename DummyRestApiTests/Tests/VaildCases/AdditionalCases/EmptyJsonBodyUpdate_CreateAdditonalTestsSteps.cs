@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
+﻿using DummyRestApiTests.Helpers;
+using NUnit.Framework;
 using RestApiSender;
-using RestSharp;
 using TechTalk.SpecFlow;
 
 namespace DummyRestApiTests.Tests.VaildCases.AdditionalCases
@@ -9,6 +9,7 @@ namespace DummyRestApiTests.Tests.VaildCases.AdditionalCases
     public class EmptyJsonBodyUpdate_CreateAdditonalTestsSteps
     {
         private readonly Sender sender = new Sender();
+        private readonly EmployeeParser parser = new EmployeeParser();
         private SimplifiedResponseObject response;
         private int employeeId;
         private string jsonBody;
@@ -42,12 +43,11 @@ namespace DummyRestApiTests.Tests.VaildCases.AdditionalCases
         [Then(@"I should have employee object only with Id returned")]
         public void ThenIShouldHaveEmployeeObjectOnlyWithIdReturned()
         {
-            var jsonResponseData = (JsonObject)SimpleJson.DeserializeObject(response.Data);
-            var actualId = jsonResponseData[0];
-            var actualName = jsonResponseData[1].ToString();
+            var actualId = parser.ParseAndReturnEmployeeFromGetAndUpdateResponseObject(response).Id;
+            var actualName = parser.ParseAndReturnEmployeeFromGetAndUpdateResponseObject(response).Name;
 
             Assert.IsNotNull(actualId);
-            Assert.AreEqual(employeeId.ToString(), actualId);
+            Assert.AreEqual(employeeId.ToString(), actualId.ToString());
             Assert.IsEmpty(actualName, "is not empty");
         }
     }

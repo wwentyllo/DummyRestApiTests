@@ -1,7 +1,6 @@
-﻿using NUnit.Framework;
+﻿using DummyRestApiTests.Helpers;
+using NUnit.Framework;
 using RestApiSender;
-using RestSharp;
-using System;
 using TechTalk.SpecFlow;
 
 namespace DummyRestApiTests.Tests.VaildCases.BasicTests
@@ -10,6 +9,7 @@ namespace DummyRestApiTests.Tests.VaildCases.BasicTests
     public class GetOneEmployeeSteps
     {
         private readonly Sender sender = new Sender();
+        private readonly EmployeeParser parser = new EmployeeParser();
         private int employeeId;
         private SimplifiedResponseObject response;
 
@@ -36,9 +36,8 @@ namespace DummyRestApiTests.Tests.VaildCases.BasicTests
         [Then(@"the employee with given id should be returned")]
         public void ThenTheEmployeeWithGivenIdShouldBeReturned()
         {
-            var jsonResponseData = (JsonObject)SimpleJson.DeserializeObject(response.Data);
-            var actualEmployeeId = Int32.Parse(jsonResponseData[0].ToString());
-            var actualEmployeeName = jsonResponseData[1].ToString();
+            var actualEmployeeId = parser.ParseAndReturnEmployeeFromGetAndUpdateResponseObject(response).Id;
+            var actualEmployeeName = parser.ParseAndReturnEmployeeFromGetAndUpdateResponseObject(response).Name;
 
             Assert.AreEqual(employeeId, actualEmployeeId);
             Assert.AreEqual("Garrett Winters", actualEmployeeName);
